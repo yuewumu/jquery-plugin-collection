@@ -1,11 +1,11 @@
 /*
  * 间歇性向上滚动父节点下的节点
  * 调用方法:$(".xxx").slideUp({
-* 			"time":3000,
-* 			"parent":".xxx",
-* 			"hoverFlag":false,
-* 			"childNode":"p"
-* 			})
+* 		"time":3000,
+* 		"parent":".xxx",
+* 		"hoverFlag":false,
+* 		"childNode":"p"
+* 	})
  */
 $.fn.extend({
 	"slideUp": function(value) {
