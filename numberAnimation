@@ -1,65 +1,58 @@
 /*
- * 数字自动从指定的值（from）以指定的时间（speed）自增加到某个指定的值（to）;
- * 调用方法：$(".xxx").countTo();
- * 对应的节点上以 data-from ，data-to等的方式配置好属性
- */
-$.fn.countTo = function() {
-    return $(this).each(function() {
-        var c = $.extend({},
-        $.fn.countTo.defaults, {
-            from: $(this).data("from"),
-            to: $(this).data("to"),
-            speed: $(this).data("speed"),
-            refreshInterval: $(this).data("refresh-interval"),
-            decimals: $(this).data("decimals"),
-            length:$(this).data("length")
-        });
-        var h = Math.ceil(c.speed / c.refreshInterval),
-        i = (c.to - c.from) / h;
-        var j = this,
-        f = $(this),
-        e = 0,
-        g = c.from,
-        d = f.data("countTo") || {};
-        f.data("countTo", d);
-        if (d.interval) {
-            clearInterval(d.interval)
-        }
-        d.interval = setInterval(k, c.refreshInterval);
-        b(g);
-        function k() {
-            g += i;
-            e++;
-            b(g);
-            if (typeof(c.onUpdate) == "function") {
-                c.onUpdate.call(j, g)
-            }
-            if (e >= h) {
-                f.removeData("countTo");
-                clearInterval(d.interval);
-                g = c.to;
-                if (typeof(c.onComplete) == "function") {
-                    c.onComplete.call(j, g)
-                }
-            }
-        }
-        function b(m) {
-            var l = c.formatter.call(j, m, c);
-            f.html(l)
-        }
-    })
-};
-$.fn.countTo.defaults = {
-    from: 0,
-    to: 0,
-    speed: 1000,
-    refreshInterval: 100,
-    decimals: 0,
-    formatter: formatter,
-    onUpdate: null,
-    onComplete: null
-};
-function formatter(b, a) {
+* 数字滚动
+* 自动从指定的值（data-from）以指定的时间（data-speed）自增加到某个指定的值（data-to）
+* 调用方法：$(".xxx").countTo();
+* 对应的节点上需以 data-from ，data-to等配置好属性
+*/
+$.fn.extend({
+	countTo:function(){
+		var setting =  $.extend({},{
+			from: 0,
+			to: 0,
+			speed: 1000,
+			refreshInterval: 100,
+			decimals: 0,
+			formatter: formatter,
+			onUpdate: null,
+			onComplete: null
+		}, {
+			from: $(this).data("from"),//起始数字
+			to: $(this).data("to"),//最终数字
+			speed: $(this).data("speed"),//滚动时常
+			refreshInterval: $(this).data("refresh-interval"),
+			decimals: $(this).data("decimals"),
+			length:$(this).data("length")//数字长度,若位数不够会在前面补零,若大于此长度,则截取后面几位
+		});
+		var h = Math.ceil(setting.speed / setting.refreshInterval),
+		i = (setting.to - setting.from) / h;
+		var that = this,
+		self = $(this),
+		e = 0,
+		g = setting.from,
+		interval = setInterval(k, setting.refreshInterval);
+		b(g);
+		function k() {
+			g += i;
+			e++;
+			b(g);
+			if (typeof(setting.onUpdate) == "function") {
+				c.onUpdate.call(that, g)
+			}
+			if (e >= h) {
+				clearInterval(interval);
+				g = setting.to;
+				if (typeof(setting.onComplete) == "function") {
+					setting.onComplete.call(that, g)
+				}
+			}
+		}
+		function b(m) {
+			var l = setting.formatter(m,setting);
+			self.html(l)
+		}
+	}
+	})
+	function formatter(b,setting) {
 	var b = b.toFixed(0).replace(/\B(?=(?:\d{10})+(?!\d))/g, ",");
-	return ( "0000000000000000" + b ).substr( -a.length );
+	return ( "0000000000000000" + b ).substr( -setting.length );
 }
